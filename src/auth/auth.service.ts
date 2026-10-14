@@ -89,6 +89,18 @@ export class AuthService {
 
     return { accessToken, user: publicUser };
   }
+
+  async findById(id: number): Promise<PublicUser> {
+    const result = await this.databaseService.query<PublicUser>(
+      'SELECT id, name, username FROM users WHERE id = $1',
+      [id],
+    );
+    const user = result.rows[0];
+    if (!user) {
+      throw new UnauthorizedException('User no longer exists');
+    }
+    return user;
+  }
 }
 
 function isUniqueViolation(error: unknown): error is { code: string } {

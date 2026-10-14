@@ -49,6 +49,21 @@ describe('AppController (e2e)', () => {
         return { rows: user ? [user] : [] };
       }
 
+      if (sql.includes('WHERE id = $1')) {
+        const user = users.find((row) => row.id === Number(values[0]));
+        return {
+          rows: user
+            ? [
+                {
+                  id: user.id,
+                  name: user.name,
+                  username: user.username,
+                },
+              ]
+            : [],
+        };
+      }
+
       if (sql.includes('ORDER BY id')) {
         return {
           rows: users.map(({ id, name, username }) => ({
@@ -137,6 +152,15 @@ describe('AppController (e2e)', () => {
     });
 
     await request(app.getHttpServer())
+      .get('/me')
+      .set('Authorization', `Bearer ${loginResponse.body.data.accessToken}`)
+      .expect(200)
+      .expect({
+        success: true,
+        data: { id: 3, name: 'New User', username: 'new.user' },
+      });
+
+    await request(app.getHttpServer())
       .get('/users')
       .expect(200)
       .expect((response) => {
@@ -146,6 +170,14 @@ describe('AppController (e2e)', () => {
           username: 'new.user',
         });
       });
+  });
+
+  it('requires a valid bearer token to access /me', async () => {
+    await request(app.getHttpServer()).get('/me').expect(401);
+    await request(app.getHttpServer())
+      .get('/me')
+      .set('Authorization', 'Bearer not-a-valid-token')
+      .expect(401);
   });
 
   it('rejects duplicate usernames regardless of case', async () => {

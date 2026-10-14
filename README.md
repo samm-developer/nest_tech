@@ -55,6 +55,8 @@ The API provides:
 - `POST /auth/register` with `{ "name", "username", "password" }` to create an account.
 - `POST /auth/login` with `{ "username", "password" }` to verify credentials and receive
   a one-hour JWT access token.
+- `GET /me` with `Authorization: Bearer <accessToken>` to get the authenticated user's
+  current `id`, `name`, and `username`.
 
 Passwords must be at least 8 characters and are stored as bcrypt hashes. Usernames are
 case-insensitive and unique. Responses never include the stored password hash. Set a
@@ -72,6 +74,9 @@ curl -X POST http://localhost:3000/auth/register \
 curl -X POST http://localhost:3000/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"sam","password":"safe-password-123"}'
+
+curl http://localhost:3000/me \
+  -H 'Authorization: Bearer <accessToken>'
 ```
 
 ## Project setup
