@@ -3,14 +3,28 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
+import { DatabaseService } from './../src/database/database.service.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
+  const databaseService = {
+    query: vi.fn(async (sql: string) => ({
+      rows: sql.startsWith('SELECT')
+        ? [
+            { id: 1, name: 'Adesh' },
+            { id: 2, name: 'Rahul' },
+          ]
+        : [],
+    })),
+  };
 
   beforeEach(async () => {
+    databaseService.query.mockClear();
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(DatabaseService)
+      .useValue(databaseService).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();

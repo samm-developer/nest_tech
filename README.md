@@ -27,8 +27,10 @@
 
 ## Users API
 
-`GET /users` returns the in-memory users wrapped in a `{ "success": true, "data": [...] }` response.
-The endpoint also includes an `X-Request-Time` response header containing the request timestamp.
+`GET /users` returns rows from the PostgreSQL `users` table wrapped in a
+`{ "success": true, "data": [...] }` response. The table is created if it does not exist,
+with an identity `id` and required `name`. The endpoint also includes an `X-Request-Time`
+response header containing the request timestamp.
 
 ## PostgreSQL
 
