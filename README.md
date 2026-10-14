@@ -48,6 +48,32 @@ DATABASE_URL=postgresql://user:password@localhost:5432/nest npm run start:dev
 The pool connects when the first query is made. Inject `DatabaseService` into a provider
 and call its `query` method to execute parameterized SQL.
 
+## Registration and login
+
+The API provides:
+
+- `POST /auth/register` with `{ "name", "username", "password" }` to create an account.
+- `POST /auth/login` with `{ "username", "password" }` to verify credentials and receive
+  a one-hour JWT access token.
+
+Passwords must be at least 8 characters and are stored as bcrypt hashes. Usernames are
+case-insensitive and unique. Responses never include the stored password hash. Set a
+private `JWT_SECRET` in `.env`; do not commit the `.env` file. The existing users table
+is extended with `username` and `password_hash` columns when the app starts; older rows
+remain visible but cannot be used to log in until registered with credentials.
+
+Example:
+
+```bash
+curl -X POST http://localhost:3000/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Sam Example","username":"sam","password":"safe-password-123"}'
+
+curl -X POST http://localhost:3000/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"sam","password":"safe-password-123"}'
+```
+
 ## Project setup
 
 ```bash
@@ -145,4 +171,5 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
 # nest_tech

@@ -1,6 +1,7 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { ResponseTransformInterceptor } from '../common/interceptors/response-transform.interceptor.js';
-import { User, UsersService } from './users.service.js';
+import { UsersService } from './users.service.js';
+import type { User } from './users.service.js';
 
 @Controller('users')
 @UseInterceptors(ResponseTransformInterceptor)
